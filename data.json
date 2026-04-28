@@ -1,0 +1,26 @@
+{
+  "modpacks": [
+    {
+      "id": "4bca231e-eb39-4e4c-9816-f7bf5c1c1057",
+      "name": "Perron Studios AGGames",
+      "description": "",
+      "version": "1.0.0",
+      "minecraft_version": "1.20.1",
+      "modloader": "forge",
+      "modloader_version": "",
+      "filename": "c602f1eb-651f-4071-b34c-723a40e0d062-Perron Studios AGGames.mrpack",
+      "file_size": 280055862
+    }
+  ],
+  "codes": [
+    {
+      "id": "d96d31be-5028-42b0-8fb3-d0c0bd46867b",
+      "code": "WRJL-92NF",
+      "modpack_id": "4bca231e-eb39-4e4c-9816-f7bf5c1c1057",
+      "description": "",
+      "max_uses": -1,
+      "active": 1
+    }
+  ],
+  "download_logs": []
+}
