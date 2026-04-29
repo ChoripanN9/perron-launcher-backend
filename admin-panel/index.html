@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Admin — Launcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #5eff8a;
+    --accent2: #ff5e7a;
+    --accent3: #5e9fff;
+    --text: #e8e8f0;
+    --text-muted: #7070a0;
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --radius: 8px;
+    --transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo h1 {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .sidebar-logo span {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .nav {
+    padding: 16px 12px;
+    flex: 1;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    transition: all var(--transition);
+    margin-bottom: 4px;
+    border: 1px solid transparent;
+    user-select: none;
+  }
+
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: var(--surface2); color: var(--accent); border-color: var(--border); }
+  .nav-item .icon { font-size: 18px; }
+
+  .sidebar-footer {
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  /* ── Main ── */
+  .main {
+    margin-left: 240px;
+    flex: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    height: 60px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    justify-content: space-between;
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .topbar-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+
+  .badge.green { background: rgba(94,255,138,0.12); color: var(--accent); border: 1px solid rgba(94,255,138,0.3); }
+  .badge.red { background: rgba(255,94,122,0.12); color: var(--accent2); border: 1px solid rgba(255,94,122,0.3); }
+  .badge.blue { background: rgba(94,159,255,0.12); color: var(--accent3); border: 1px solid rgba(94,159,255,0.3); }
+
+  .content {
+    padding: 32px;
+    flex: 1;
+  }
+
+  /* ── Login Screen ── */
+  #login-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px 40px;
+    width: 380px;
+    text-align: center;
+  }
+
+  .login-card .logo { font-size: 40px; margin-bottom: 16px; }
+  .login-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .login-card p { color: var(--text-muted); font-size: 13px; margin-bottom: 32px; }
+
+  /* ── Stats Grid ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+  }
+
+  .stat-card.green::before { background: var(--accent); }
+  .stat-card.red::before { background: var(--accent2); }
+  .stat-card.blue::before { background: var(--accent3); }
+
+  .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    line-height: 1;
+  }
+
+  /* ── Table ── */
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .table-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .table-header h3 { font-size: 14px; font-weight: 700; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    text-align: left;
+    padding: 12px 20px;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(42,42,58,0.5);
+    color: var(--text);
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+
+  .code-tag {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(94,255,138,0.08);
+    padding: 3px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.06em;
+    border: 1px solid rgba(94,255,138,0.2);
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: var(--radius);
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition);
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+  }
+  .btn-primary:hover { background: #7affe0; transform: translateY(-1px); }
+
+  .btn-danger {
+    background: rgba(255,94,122,0.15);
+    color: var(--accent2);
+    border: 1px solid rgba(255,94,122,0.3);
+  }
+  .btn-danger:hover { background: rgba(255,94,122,0.25); }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    padding: 6px 10px;
+  }
+  .btn-ghost:hover { color: var(--accent2); }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition);
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    width: 480px;
+    max-width: 90vw;
+    transform: translateY(20px);
+    transition: transform var(--transition);
+  }
+
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 24px; }
+
+  /* ── Forms ── */
+  .form-group { margin-bottom: 16px; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 14px;
+    outline: none;
+    transition: border-color var(--transition);
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+
+  select option { background: var(--surface); }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* ── Upload zone ── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+  }
+
+  .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: rgba(94,255,138,0.04); }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-zone .upload-icon { font-size: 32px; margin-bottom: 10px; }
+  .upload-zone p { font-size: 13px; color: var(--text-muted); }
+  .upload-zone .file-name { color: var(--accent); font-weight: 700; font-family: var(--font-mono); }
+
+  /* ── Progress bar ── */
+  .progress-bar {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+    display: none;
+  }
+  .progress-bar.visible { display: block; }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  /* ── Toast ── */
+  .toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toast {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.2s ease;
+    min-width: 280px;
+  }
+
+  .toast.success { border-color: rgba(94,255,138,0.4); }
+  .toast.error { border-color: rgba(255,94,122,0.4); color: var(--accent2); }
+
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  /* ── Section tabs ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .empty-state {
+    padding: 48px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .empty-state .empty-icon { font-size: 36px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="logo">🎮</div>
+    <h2>Panel Admin</h2>
+    <p>Ingresa la contraseña para continuar</p>
+    <div class="form-group">
+      <input type="password" id="login-password" placeholder="Contraseña" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doLogin()">Entrar</button>
+    <div id="login-error" style="color:var(--accent2);font-size:12px;margin-top:12px;display:none"></div>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>🎮 Launcher</h1>
+    <span>Panel de Admin</span>
+  </div>
+  <nav class="nav">
+    <div class="nav-item active" onclick="showPage('dashboard')" data-page="dashboard">
+      <span class="icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('modpacks')" data-page="modpacks">
+      <span class="icon">📦</span> Modpacks
+    </div>
+    <div class="nav-item" onclick="showPage('codes')" data-page="codes">
+      <span class="icon">🔑</span> Códigos
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div id="server-status" style="display:flex;align-items:center;gap:6px">
+      <span style="width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block"></span>
+      Online
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <div class="topbar">
+    <span class="topbar-title" id="page-title">Dashboard</span>
+    <div id="topbar-actions"></div>
+  </div>
+
+  <div class="content">
+
+    <!-- Dashboard -->
+    <div id="page-dashboard" class="page active">
+      <div class="stats-grid">
+        <div class="stat-card green">
+          <div class="stat-label">Modpacks</div>
+          <div class="stat-value" id="stat-modpacks">—</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Códigos activos</div>
+          <div class="stat-value" id="stat-codes">—</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Descargas totales</div>
+          <div class="stat-value" id="stat-downloads">—</div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Descargas recientes</h3>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Modpack</th>
+              <th>Código usado</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody id="recent-downloads">
+            <tr><td colspan="3" class="empty-state">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modpacks -->
+    <div id="page-modpacks" class="page">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Modpacks subidos</h3>
+          <button class="btn btn-primary" onclick="openModal('modal-upload')">+ Subir modpack</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Versión MC</th>
+              <th>Modloader</th>
+              <th>Tamaño</th>
+              <th>Códigos</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="modpacks-table">
+            <tr><td colspan="6" class="empty-state">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Codes -->
+    <div id="page-codes" class="page">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Códigos de acceso</h3>
+          <button class="btn btn-primary" onclick="openModal('modal-create-code')">+ Crear código</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Modpack</th>
+              <th>Usos</th>
+              <th>Estado</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="codes-table">
+            <tr><td colspan="5" class="empty-state">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Modal: Upload Modpack -->
+<div id="modal-upload" class="modal-overlay" onclick="closeModalOnOverlay(event, 'modal-upload')">
+  <div class="modal">
+    <h3>📦 Subir nuevo modpack</h3>
+    <div class="form-group">
+      <label>Archivo .mrpack</label>
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" id="mrpack-file" accept=".mrpack" onchange="onFileSelect(this)">
+        <div class="upload-icon">📂</div>
+        <p id="upload-zone-text">Arrastra el archivo o haz clic para seleccionar</p>
+        <div class="progress-bar" id="upload-progress">
+          <div class="progress-fill" id="upload-progress-fill"></div>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nombre del modpack</label>
+        <input type="text" id="mp-name" placeholder="Mi Modpack">
+      </div>
+      <div class="form-group">
+        <label>Versión</label>
+        <input type="text" id="mp-version" placeholder="1.0.0">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Versión de Minecraft</label>
+        <input type="text" id="mp-mc-version" placeholder="1.20.1">
+      </div>
+      <div class="form-group">
+        <label>Modloader</label>
+        <select id="mp-modloader">
+          <option value="fabric">Fabric</option>
+          <option value="forge">Forge</option>
+          <option value="neoforge">NeoForge</option>
+          <option value="quilt">Quilt</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Versión del Modloader (opcional)</label>
+      <input type="text" id="mp-modloader-version" placeholder="0.15.0">
+    </div>
+    <div class="form-group">
+      <label>Descripción (opcional)</label>
+      <textarea id="mp-description" rows="2" placeholder="Breve descripción..."></textarea>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-secondary" onclick="closeModal('modal-upload')">Cancelar</button>
+      <button class="btn btn-primary" onclick="uploadModpack()">Subir modpack</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Create Code -->
+<div id="modal-create-code" class="modal-overlay" onclick="closeModalOnOverlay(event, 'modal-create-code')">
+  <div class="modal">
+    <h3>🔑 Crear código de acceso</h3>
+    <div class="form-group">
+      <label>Modpack</label>
+      <select id="code-modpack-id">
+        <option value="">Cargando...</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Código personalizado (opcional)</label>
+      <input type="text" id="code-custom" placeholder="Ej: EVENTO2025 — dejar vacío para generar automático">
+    </div>
+    <div class="form-group">
+      <label>Máximo de usos (-1 = ilimitado)</label>
+      <input type="number" id="code-max-uses" value="-1">
+    </div>
+    <div class="form-group">
+      <label>Descripción (opcional)</label>
+      <input type="text" id="code-description" placeholder="Ej: Evento del sábado">
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-secondary" onclick="closeModal('modal-create-code')">Cancelar</button>
+      <button class="btn btn-primary" onclick="createCode()">Crear código</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+const API = '';  // Same origin
+let token = localStorage.getItem('admin_token');
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const pwd = document.getElementById('login-password').value;
+  try {
+    const r = await fetch(`${API}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd })
+    });
+    const d = await r.json();
+    if (d.success) {
+      token = d.token;
+      localStorage.setItem('admin_token', token);
+      document.getElementById('login-screen').style.display = 'none';
+      initApp();
+    } else {
+      document.getElementById('login-error').textContent = d.error;
+      document.getElementById('login-error').style.display = 'block';
+    }
+  } catch { toast('Error conectando al servidor', 'error'); }
+}
+
+async function authFetch(url, opts = {}) {
+  opts.headers = { ...opts.headers, Authorization: `Bearer ${token}` };
+  const r = await fetch(url, opts);
+  if (r.status === 401) {
+    localStorage.removeItem('admin_token');
+    location.reload();
+  }
+  return r;
+}
+
+// ─── Navigation ──────────────────────────────────────────────────────────────
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`page-${page}`).classList.add('active');
+  document.querySelector(`[data-page="${page}"]`).classList.add('active');
+
+  const titles = { dashboard: 'Dashboard', modpacks: 'Modpacks', codes: 'Códigos de acceso' };
+  document.getElementById('page-title').textContent = titles[page];
+
+  if (page === 'dashboard') loadStats();
+  if (page === 'modpacks') loadModpacks();
+  if (page === 'codes') loadCodes();
+}
+
+// ─── Dashboard ───────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const r = await authFetch(`${API}/api/admin/stats`);
+    const d = await r.json();
+    if (!d.success) return;
+    const { stats } = d;
+    document.getElementById('stat-modpacks').textContent = stats.totalModpacks;
+    document.getElementById('stat-codes').textContent = stats.totalCodes;
+    document.getElementById('stat-downloads').textContent = stats.totalDownloads;
+
+    const tbody = document.getElementById('recent-downloads');
+    if (!stats.recentDownloads.length) {
+      tbody.innerHTML = '<tr><td colspan="3"><div class="empty-state"><div class="empty-icon">📭</div>Sin descargas aún</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = stats.recentDownloads.map(d => `
+      <tr>
+        <td>${d.modpack_name}</td>
+        <td><span class="code-tag">${d.code}</span></td>
+        <td style="color:var(--text-muted);font-family:var(--font-mono);font-size:11px">${new Date(d.downloaded_at).toLocaleString('es-ES')}</td>
+      </tr>
+    `).join('');
+  } catch { toast('Error cargando stats', 'error'); }
+}
+
+// ─── Modpacks ────────────────────────────────────────────────────────────────
+async function loadModpacks() {
+  try {
+    const r = await authFetch(`${API}/api/admin/modpacks`);
+    const d = await r.json();
+    const tbody = document.getElementById('modpacks-table');
+    if (!d.modpacks.length) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📦</div>No hay modpacks. ¡Sube el primero!</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = d.modpacks.map(m => `
+      <tr>
+        <td><strong>${m.name}</strong><br><span style="color:var(--text-muted);font-size:11px">v${m.version}</span></td>
+        <td><span class="badge blue">${m.minecraft_version}</span></td>
+        <td style="text-transform:capitalize">${m.modloader}</td>
+        <td style="color:var(--text-muted);font-family:var(--font-mono);font-size:12px">${formatBytes(m.file_size)}</td>
+        <td><span class="badge ${m.code_count > 0 ? 'green' : ''}">${m.code_count} códigos</span></td>
+        <td>
+          <button class="btn btn-ghost" onclick="deleteModpack('${m.id}', '${m.name}')">🗑️</button>
+        </td>
+      </tr>
+    `).join('');
+  } catch { toast('Error cargando modpacks', 'error'); }
+}
+
+async function uploadModpack() {
+  const file = document.getElementById('mrpack-file').files[0];
+  if (!file) return toast('Selecciona un archivo .mrpack', 'error');
+
+  const name = document.getElementById('mp-name').value.trim();
+  const version = document.getElementById('mp-version').value.trim();
+  const mc_version = document.getElementById('mp-mc-version').value.trim();
+  const modloader = document.getElementById('mp-modloader').value;
+  if (!name || !version || !mc_version) return toast('Completa los campos requeridos', 'error');
+
+  const fd = new FormData();
+  fd.append('mrpack', file);
+  fd.append('name', name);
+  fd.append('version', version);
+  fd.append('minecraft_version', mc_version);
+  fd.append('modloader', modloader);
+  fd.append('modloader_version', document.getElementById('mp-modloader-version').value);
+  fd.append('description', document.getElementById('mp-description').value);
+
+  // Show progress
+  const prog = document.getElementById('upload-progress');
+  const fill = document.getElementById('upload-progress-fill');
+  prog.classList.add('visible');
+
+  try {
+    // Use XMLHttpRequest for progress
+    await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.upload.onprogress = e => {
+        if (e.lengthComputable) fill.style.width = (e.loaded / e.total * 100) + '%';
+      };
+      xhr.onload = () => {
+        const d = JSON.parse(xhr.responseText);
+        if (d.success) resolve(d);
+        else reject(new Error(d.error));
+      };
+      xhr.onerror = () => reject(new Error('Error de red'));
+      xhr.open('POST', `${API}/api/admin/modpacks`);
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      xhr.send(fd);
+    });
+
+    toast('Modpack subido correctamente ✅', 'success');
+    closeModal('modal-upload');
+    loadModpacks();
+    loadStats();
+  } catch (e) {
+    toast(e.message, 'error');
+  } finally {
+    prog.classList.remove('visible');
+    fill.style.width = '0';
+  }
+}
+
+async function deleteModpack(id, name) {
+  if (!confirm(`¿Eliminar "${name}"? También se eliminarán todos sus códigos.`)) return;
+  try {
+    const r = await authFetch(`${API}/api/admin/modpacks/${id}`, { method: 'DELETE' });
+    const d = await r.json();
+    if (d.success) { toast('Modpack eliminado', 'success'); loadModpacks(); loadStats(); }
+    else toast(d.error, 'error');
+  } catch { toast('Error al eliminar', 'error'); }
+}
+
+// ─── Codes ───────────────────────────────────────────────────────────────────
+async function loadCodes() {
+  try {
+    const r = await authFetch(`${API}/api/admin/codes`);
+    const d = await r.json();
+    const tbody = document.getElementById('codes-table');
+    if (!d.codes.length) {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🔑</div>No hay códigos aún</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = d.codes.map(c => `
+      <tr>
+        <td>
+          <span class="code-tag">${c.code}</span>
+          ${c.description ? `<br><span style="color:var(--text-muted);font-size:11px">${c.description}</span>` : ''}
+        </td>
+        <td>${c.modpack_name} <span style="color:var(--text-muted);font-size:11px">v${c.modpack_version}</span></td>
+        <td style="font-family:var(--font-mono);font-size:12px">${c.uses}${c.max_uses === -1 ? '' : ` / ${c.max_uses}`}</td>
+        <td>
+          <span class="badge ${c.active ? 'green' : 'red'}">${c.active ? 'Activo' : 'Inactivo'}</span>
+        </td>
+        <td style="display:flex;gap:6px">
+          <button class="btn btn-secondary" style="padding:5px 10px;font-size:12px" onclick="toggleCode('${c.id}')">${c.active ? 'Desactivar' : 'Activar'}</button>
+          <button class="btn btn-ghost" onclick="deleteCode('${c.id}')">🗑️</button>
+          <button class="btn btn-ghost" onclick="copyCode('${c.code}')" title="Copiar">📋</button>
+        </td>
+      </tr>
+    `).join('');
+  } catch { toast('Error cargando códigos', 'error'); }
+}
+
+async function createCode() {
+  const modpack_id = document.getElementById('code-modpack-id').value;
+  if (!modpack_id) return toast('Selecciona un modpack', 'error');
+
+  const body = {
+    modpack_id,
+    custom_code: document.getElementById('code-custom').value.trim() || undefined,
+    max_uses: parseInt(document.getElementById('code-max-uses').value),
+    description: document.getElementById('code-description').value.trim()
+  };
+
+  try {
+    const r = await authFetch(`${API}/api/admin/codes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const d = await r.json();
+    if (d.success) {
+      toast(`Código creado: ${d.code.code} ✅`, 'success');
+      closeModal('modal-create-code');
+      loadCodes();
+    } else toast(d.error, 'error');
+  } catch { toast('Error creando código', 'error'); }
+}
+
+async function toggleCode(id) {
+  try {
+    const r = await authFetch(`${API}/api/admin/codes/${id}/toggle`, { method: 'PATCH' });
+    const d = await r.json();
+    if (d.success) { loadCodes(); }
+    else toast(d.error, 'error');
+  } catch { toast('Error', 'error'); }
+}
+
+async function deleteCode(id) {
+  if (!confirm('¿Eliminar este código?')) return;
+  try {
+    await authFetch(`${API}/api/admin/codes/${id}`, { method: 'DELETE' });
+    toast('Código eliminado', 'success');
+    loadCodes();
+  } catch { toast('Error', 'error'); }
+}
+
+function copyCode(code) {
+  navigator.clipboard.writeText(code);
+  toast(`Código ${code} copiado 📋`, 'success');
+}
+
+// ─── Modals ──────────────────────────────────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  if (id === 'modal-create-code') loadModpacksIntoSelect();
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function closeModalOnOverlay(e, id) {
+  if (e.target === document.getElementById(id)) closeModal(id);
+}
+
+async function loadModpacksIntoSelect() {
+  const sel = document.getElementById('code-modpack-id');
+  try {
+    const r = await authFetch(`${API}/api/admin/modpacks`);
+    const d = await r.json();
+    sel.innerHTML = d.modpacks.length
+      ? d.modpacks.map(m => `<option value="${m.id}">${m.name} (${m.minecraft_version})</option>`).join('')
+      : '<option value="">No hay modpacks</option>';
+  } catch { sel.innerHTML = '<option value="">Error cargando</option>'; }
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function onFileSelect(input) {
+  const file = input.files[0];
+  if (file) {
+    document.getElementById('upload-zone-text').innerHTML =
+      `<span class="file-name">${file.name}</span><br><span>${formatBytes(file.size)}</span>`;
+    // Auto-fill name if empty
+    if (!document.getElementById('mp-name').value) {
+      document.getElementById('mp-name').value = file.name.replace('.mrpack', '');
+    }
+  }
+}
+
+function formatBytes(b) {
+  if (!b) return '—';
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+  return (b / 1048576).toFixed(1) + ' MB';
+}
+
+function toast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> ${msg}`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ─── Init ────────────────────────────────────────────────────────────────────
+function initApp() {
+  loadStats();
+}
+
+// Check if already logged in
+window.addEventListener('DOMContentLoaded', () => {
+  if (token) {
+    // Verify token
+    fetch(`${API}/api/admin/stats`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => {
+        if (r.ok) {
+          document.getElementById('login-screen').style.display = 'none';
+          initApp();
+        } else {
+          localStorage.removeItem('admin_token');
+          token = null;
+        }
+      }).catch(() => {});
+  }
+});
+</script>
+</body>
+</html>
