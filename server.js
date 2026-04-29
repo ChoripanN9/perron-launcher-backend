@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve admin panel static files
-app.use('/admin', express.static(path.join(__dirname, '../admin-panel')));
+app.use('/admin', express.static(path.join(__dirname, 'admin-panel')));
 
 // ─── Auth middleware ────────────────────────────────────────────────────────
 function requireAuth(req, res, next) {
